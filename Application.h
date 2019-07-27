@@ -14,6 +14,7 @@ public:
 	void onConnectionSuccessful() const;
 	void OnMessageReceived(const wxString& command);
 	void OnProcOutput(const wxString& processOutput);
+	void OnServerDisconnected() const;
 	Client* m_Client;
 	ProcessHandler* m_ProcHandler;
 };

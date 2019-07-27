@@ -56,3 +56,8 @@ void Application::OnProcOutput(const wxString& processOutput)
 {
 	m_Client->SendData(processOutput);
 }
+
+void Application::OnServerDisconnected() const
+{
+	m_ProcHandler->FinishSync();
+}

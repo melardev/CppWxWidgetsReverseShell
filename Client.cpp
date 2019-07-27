@@ -19,9 +19,6 @@ void Client::OnSocketEvent(wxSocketEvent& event)
 	wxString s = "OnSocketEvent: ";
 	wxSocketBase* sock = event.GetSocket();
 
-	// m_text->AppendText(s);
-
-	// Now we process the event
 	switch (event.GetSocketEvent())
 	{
 	case wxSOCKET_CONNECTION:
@@ -34,6 +31,7 @@ void Client::OnSocketEvent(wxSocketEvent& event)
 		}
 	case wxSOCKET_LOST:
 		{
+			app->OnServerDisconnected();
 			break;
 		}
 	default: ;

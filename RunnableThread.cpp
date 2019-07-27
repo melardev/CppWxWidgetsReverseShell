@@ -1,6 +1,7 @@
 #include "RunnableThread.h"
 
-RunnableThread::RunnableThread(std::function<void*()> func): wxThread(wxTHREAD_JOINABLE), m_Runnable(func)
+RunnableThread::RunnableThread(std::function<void*()> func)
+	: wxThread(wxTHREAD_JOINABLE), m_Runnable(func)
 {
 	m_Runnable = func;
 }

@@ -15,7 +15,7 @@ public:
 
 	void WriteIntoProcess(const wxString& command) const;
 	void Start();
-	void FinishSync();
+	void FinishSync() const;
 
 private:
 

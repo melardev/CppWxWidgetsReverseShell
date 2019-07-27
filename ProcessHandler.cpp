@@ -19,29 +19,6 @@ ProcessHandler::ProcessHandler(Application* app, const wxString& command) : app(
 {
 }
 
-void ProcessHandler::OnProcessTerminated(wxProcessEvent& e)
-{
-	running = false;
-	wxTheApp->ExitMainLoop();
-	m_Process->CloseOutput();
-}
-
-void ProcessHandler::WriteIntoProcess(const wxString& command) const
-{
-	wxOutputStream* processOutputStream = m_Process->GetOutputStream();
-	if (processOutputStream)
-	{
-		wxTextOutputStream textOutputStream(*processOutputStream);
-		// I always prefere to use TextOutputStream.WriteString() but you can also use the low level wxOutputStream.WriteAll
-		if (command.EndsWith(wxT('\n')))
-			processOutputStream->WriteAll(command.c_str(), command.size());
-		else
-		{
-			textOutputStream.WriteString(command + wxT('\n'));
-			textOutputStream.Flush();
-		}
-	}
-}
 
 void ProcessHandler::Start()
 {
@@ -66,9 +43,7 @@ void ProcessHandler::Start()
 
 		while ((bytesRead = in->Read(&buffer, sizeof(buffer)).LastRead()) > 0)
 		{
-			
 			app->OnProcOutput(wxString(buffer, 0, bytesRead));
-			
 		};
 		return nullptr;
 	});
@@ -84,9 +59,7 @@ void ProcessHandler::Start()
 		wxInputStream* in = m_Process->GetErrorStream();
 		while ((bytesRead = in->Read(&buffer, sizeof(buffer)).LastRead()) > 0)
 		{
-			buffer[bytesRead] = '\0';
-			wxPrintf("%s", wxString(buffer, 0, bytesRead));
-			// std::cout << std::string(buffer, 0, bytesRead);
+			app->OnProcOutput(wxString(buffer, 0, bytesRead));
 		}
 
 		return nullptr;
@@ -96,12 +69,39 @@ void ProcessHandler::Start()
 	errorProcessReaderThread->Run();
 }
 
-void ProcessHandler::FinishSync()
+void ProcessHandler::OnProcessTerminated(wxProcessEvent& e)
 {
+	running = false;
+	wxTheApp->ExitMainLoop();
+	m_Process->CloseOutput();
+}
+
+void ProcessHandler::WriteIntoProcess(const wxString& command) const
+{
+	wxOutputStream* processOutputStream = m_Process->GetOutputStream();
+	if (processOutputStream)
+	{
+		wxTextOutputStream textOutputStream(*processOutputStream);
+		// I always prefere to use TextOutputStream.WriteString() but you can also use the low level wxOutputStream.WriteAll
+		if (command.EndsWith(wxT('\n')))
+			processOutputStream->WriteAll(command.c_str(), command.size());
+		else
+		{
+			textOutputStream.WriteString(command + wxT('\n'));
+			textOutputStream.Flush();
+		}
+	}
+}
+
+void ProcessHandler::FinishSync() const
+{
+	m_Process->CloseOutput();
+	/*
 	outputProcessReaderThread->Wait();
 	errorProcessReaderThread->Wait();
 
 
 	delete outputProcessReaderThread;
 	delete errorProcessReaderThread;
+	*/
 }
