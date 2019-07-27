@@ -14,6 +14,19 @@ Client::Client(Application* app): clientSocket(new wxSocketClient), receivingBuf
 {
 }
 
+void Client::Start()
+{
+	wxIPV4address address;
+	address.Hostname("localhost");
+	address.Service(3002);
+
+	clientSocket->SetEventHandler(*this, ClientSocketId);
+
+	clientSocket->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
+	clientSocket->Notify(true);
+	((wxSocketClient*)clientSocket)->Connect(address, false);
+}
+
 void Client::OnSocketEvent(wxSocketEvent& event)
 {
 	wxString s = "OnSocketEvent: ";
@@ -44,27 +57,10 @@ void Client::ReadFromSocket(wxSocketBase* sock)
 	// wxSocketEvent again.
 	sock->SetNotify(wxSOCKET_LOST_FLAG);
 
-
 	sock->Read(receivingBuffer, 1024);
 	const wxUint32 readSoFar = sock->GetLastIOReadSize();
 	app->OnMessageReceived(wxString(receivingBuffer, 0, readSoFar));
 	sock->SetNotify(wxSOCKET_LOST_FLAG | wxSOCKET_INPUT_FLAG);
-}
-
-void Client::Start()
-{
-	wxIPV4address addr;
-	addr.Hostname("localhost");
-	addr.Service(3002);
-
-	clientSocket->SetEventHandler(*this, ClientSocketId);
-
-	// clientSocket->SetNotify(wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
-	// Since we use this class for both server clients, and Client project
-	// add wxSOCKET_CONNECTION_FLAG
-	clientSocket->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
-	clientSocket->Notify(true);
-	((wxSocketClient*)clientSocket)->Connect(addr, false);
 }
 
 void Client::SendData(const wxString& data) const

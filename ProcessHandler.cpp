@@ -82,7 +82,7 @@ void ProcessHandler::WriteIntoProcess(const wxString& command) const
 	if (processOutputStream)
 	{
 		wxTextOutputStream textOutputStream(*processOutputStream);
-		// I always prefere to use TextOutputStream.WriteString() but you can also use the low level wxOutputStream.WriteAll
+		// I always prefer to use TextOutputStream.WriteString() but you can also use the low level wxOutputStream.WriteAll
 		if (command.EndsWith(wxT('\n')))
 			processOutputStream->WriteAll(command.c_str(), command.size());
 		else
@@ -96,7 +96,7 @@ void ProcessHandler::WriteIntoProcess(const wxString& command) const
 void ProcessHandler::FinishSync() const
 {
 	m_Process->CloseOutput();
-	/*
+	/* Joinable threads must be deleted manually
 	outputProcessReaderThread->Wait();
 	errorProcessReaderThread->Wait();
 
